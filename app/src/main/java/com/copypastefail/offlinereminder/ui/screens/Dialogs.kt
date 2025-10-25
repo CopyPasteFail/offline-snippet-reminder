@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -80,7 +81,9 @@ fun ChangeFrequencyDialog(
     var frequency by remember { mutableStateOf(currentFrequency.toString()) }
     var expanded by remember { mutableStateOf(false) }
     var selectedTimeUnit by remember { mutableStateOf(currentTimeUnit) }
-    val timeUnitOptions = TimeUnit.values().filter { it >= TimeUnit.SECONDS }
+    val timeUnitOptions = TimeUnit.values().filter { it >= TimeUnit.MINUTES }
+    var isError by remember { mutableStateOf(false) }
+
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -89,9 +92,20 @@ fun ChangeFrequencyDialog(
             Column {
                 TextField(
                     value = frequency,
-                    onValueChange = { frequency = it },
-                    label = { Text("Frequency") }
+                    onValueChange = {
+                        frequency = it
+                        isError = false
+                    },
+                    label = { Text("Frequency") },
+                    isError = isError
                 )
+                if (isError) {
+                    Text(
+                        text = "Frequency must be at least 15 minutes.",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
                 Box(modifier = Modifier.fillMaxWidth()) {
                     ExposedDropdownMenuBox(
                         expanded = expanded,
@@ -116,6 +130,7 @@ fun ChangeFrequencyDialog(
                                     text = { Text(timeUnit.name) },
                                     onClick = {
                                         selectedTimeUnit = timeUnit
+                                        isError = false
                                         expanded = false
                                     }
                                 )
@@ -130,9 +145,16 @@ fun ChangeFrequencyDialog(
                 onClick = {
                     val newFrequency = frequency.toLongOrNull()
                     if (newFrequency != null) {
-                        onFrequencyChange(newFrequency, selectedTimeUnit)
+                        val frequencyMillis = selectedTimeUnit.toMillis(newFrequency)
+                        if (frequencyMillis >= TimeUnit.MINUTES.toMillis(15)) {
+                            onFrequencyChange(newFrequency, selectedTimeUnit)
+                            onDismiss()
+                        } else {
+                            isError = true
+                        }
+                    } else {
+                        isError = true
                     }
-                    onDismiss()
                 }
             ) {
                 Text("Save")
