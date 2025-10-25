@@ -8,8 +8,21 @@
     <string name="no_snippets_placeholder">No snippets yet</string>
     <string name="next_notification_due">Next snippet will be shown in %1$s</string>
     <string name="return_to_lists">Back to lists</string>
+    <string name="delete_list">Delete list</string>
     <string name="list_status_active">Active</string>
     <string name="list_status_paused">Paused</string>
+    <string name="frequency_label">Frequency</string>
+    <string name="snippet_text">Snippet text</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_snippet">Delete snippet</string>
+    <string name="screen_title_details">Details</string>
+    <string name="reminders_enabled_label">Reminders enabled</string>
+    <string name="notification_frequency_label">Notification every %1$d %2$s</string>
+    <plurals name="frequency_seconds_plurals">
+        <item quantity="one">%d second</item>
+        <item quantity="other">%d seconds</item>
+    </plurals>
     <plurals name="frequency_minutes_plurals">
         <item quantity="one">%d minute</item>
         <item quantity="other">%d minutes</item>

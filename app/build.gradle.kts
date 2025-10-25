@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.omer.offlinereminder"
+    namespace = "com.copypastefail.offlinereminder"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.omer.offlinereminder"
+        applicationId = "com.copypastefail.offlinereminder"
         minSdk = 30
         targetSdk = 36
         versionCode = 1
@@ -42,7 +42,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.12"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     packaging {
