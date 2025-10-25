@@ -152,4 +152,4 @@ Grant the app the notification permission when the device asks.
 
 ## License
 
-MIT License © 2025 Omer Reznik
+MIT License © 2025
