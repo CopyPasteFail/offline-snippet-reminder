@@ -1,5 +1,6 @@
 package com.copypastefail.offlinereminder.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +48,7 @@ fun DetailScreen(
     onDeleteList: () -> Unit,
     onFrequencyChange: (Long, TimeUnit) -> Unit,
     onAddSnippet: (String) -> Unit,
+    onAddMultipleSnippets: (List<String>) -> Unit,
     onDeleteSnippet: (String) -> Unit,
     onEditSnippet: (String, String) -> Unit,
     onListNameChange: (String) -> Unit,
@@ -56,6 +56,7 @@ fun DetailScreen(
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var isShowingAddSnippetDialog by remember { mutableStateOf(false) }
+    var isShowingAddMultipleSnippetsDialog by remember { mutableStateOf(false) }
     var isShowingFrequencyDialog by remember { mutableStateOf(false) }
     var isShowingEditSnippetDialog by remember { mutableStateOf(false) }
     var snippetToEdit by remember { mutableStateOf("") }
@@ -82,13 +83,6 @@ fun DetailScreen(
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { isShowingAddSnippetDialog = true },
-            ) {
-                Icon(Icons.Default.Add, "Add Snippet")
-            }
         }
     ) { 
         Column(
@@ -139,6 +133,21 @@ fun DetailScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(onClick = { isShowingAddSnippetDialog = true }) {
+                    Text("Add Snippet")
+                }
+                Button(onClick = { isShowingAddMultipleSnippetsDialog = true }) {
+                    Text("Add Multiple")
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
             if (list == null) {
                 Text("List not found.")
             } else if (list.snippets.isEmpty()) {
@@ -179,6 +188,12 @@ fun DetailScreen(
         AddSnippetDialog(
             onAddSnippet = onAddSnippet,
             onDismiss = { isShowingAddSnippetDialog = false })
+    }
+
+    if (isShowingAddMultipleSnippetsDialog) {
+        AddMultipleSnippetsDialog(
+            onAddMultipleSnippets = onAddMultipleSnippets,
+            onDismiss = { isShowingAddMultipleSnippetsDialog = false })
     }
 
     if (isShowingFrequencyDialog) {

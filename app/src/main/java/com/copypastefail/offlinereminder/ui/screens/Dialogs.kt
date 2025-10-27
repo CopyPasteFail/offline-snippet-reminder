@@ -70,6 +70,43 @@ fun AddSnippetDialog(
     }
 }
 
+@Composable
+fun AddMultipleSnippetsDialog(
+    onAddMultipleSnippets: (List<String>) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var text by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Add Multiple Snippets") },
+        text = {
+            TextField(
+                value = text,
+                onValueChange = { text = it },
+                placeholder = { Text("Enter snippets, separated by an empty line.") },
+                supportingText = { Text("Snippets are separated by at least one empty line.") }
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val snippets = text.split(Regex("\n\n+")).map { it.trim() }.filter { it.isNotBlank() }
+                    onAddMultipleSnippets(snippets)
+                    onDismiss()
+                }
+            ) {
+                Text("Add")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangeFrequencyDialog(
