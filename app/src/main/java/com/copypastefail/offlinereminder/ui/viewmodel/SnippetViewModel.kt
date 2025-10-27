@@ -12,6 +12,7 @@ import com.copypastefail.offlinereminder.R
 import com.copypastefail.offlinereminder.data.local.SnippetListWithSnippets
 import com.copypastefail.offlinereminder.data.repository.SnippetRepository
 import com.copypastefail.offlinereminder.util.ReminderScheduler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -79,7 +80,7 @@ class SnippetViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun addMultipleSnippets(listId: Int, snippets: List<String>) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.addSnippets(listId, snippets)
         }
     }
@@ -111,6 +112,7 @@ class SnippetViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun updateFrequency(listId: Int, frequency: Long, timeUnit: TimeUnit) {
+        require(frequency > 0) { "Frequency must be positive" }
         viewModelScope.launch {
             val frequencySeconds = timeUnit.toSeconds(frequency)
             repository.updateFrequency(listId, frequencySeconds)
