@@ -111,6 +111,7 @@ class SnippetViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun updateFrequency(listId: Int, frequency: Long, timeUnit: TimeUnit) {
+        require(frequency > 0) { "Frequency must be positive" }
         viewModelScope.launch {
             val frequencySeconds = timeUnit.toSeconds(frequency)
             repository.updateFrequency(listId, frequencySeconds)
