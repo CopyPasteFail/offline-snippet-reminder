@@ -1,6 +1,7 @@
 package com.copypastefail.offlinereminder.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,14 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
     val navController = rememberNavController()
     val snippetLists by viewModel.snippetLists.collectAsState()
     var listIdToDelete by remember { mutableStateOf<Int?>(null) }
+    val pendingDetailListId by viewModel.pendingDetailListId.collectAsState()
+
+    LaunchedEffect(pendingDetailListId) {
+        pendingDetailListId?.let { listId ->
+            navController.navigate(NavRoutes.detailRoute(listId))
+            viewModel.consumePendingDetailRequest()
+        }
+    }
 
 
     OfflineSnippetReminderTheme {
