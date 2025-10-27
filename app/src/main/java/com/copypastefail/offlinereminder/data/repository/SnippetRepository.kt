@@ -9,6 +9,12 @@ import java.util.concurrent.TimeUnit
 
 class SnippetRepository(private val dao: ReminderDao) {
 
+    companion object {
+        private const val MAX_SNIPPETS_PER_BATCH = 1_000
+        private const val MAX_SNIPPET_LENGTH = 5_000
+        private const val INSERT_CHUNK_SIZE = 200
+    }
+
     fun observeListsWithSnippets(): Flow<List<SnippetListWithSnippets>> = dao.observeListsWithSnippets()
 
     fun observeListWithSnippets(listId: Int): Flow<SnippetListWithSnippets?> = dao.observeListWithSnippets(listId)
@@ -54,11 +60,29 @@ class SnippetRepository(private val dao: ReminderDao) {
     }
 
     suspend fun addSnippets(listId: Int, snippets: List<String>) {
-        val currentSize = dao.getSnippetsForList(listId).size
-        val newSnippets = snippets.mapIndexed { index, text ->
-            SnippetEntity(0, listId, text, currentSize + index)
+        if (snippets.isEmpty()) {
+            return
         }
-        dao.insertSnippets(newSnippets)
+
+        require(snippets.size <= MAX_SNIPPETS_PER_BATCH) {
+            "Cannot add more than $MAX_SNIPPETS_PER_BATCH snippets at once"
+        }
+
+        snippets.forEachIndexed { index, text ->
+            require(text.length <= MAX_SNIPPET_LENGTH) {
+                "Snippet at index $index exceeds the maximum length of $MAX_SNIPPET_LENGTH characters"
+            }
+        }
+
+        var currentSize = dao.getSnippetsForList(listId).size
+
+        snippets.chunked(INSERT_CHUNK_SIZE).forEach { chunk ->
+            val newSnippets = chunk.mapIndexed { index, text ->
+                SnippetEntity(0, listId, text, currentSize + index)
+            }
+            dao.insertSnippets(newSnippets)
+            currentSize += chunk.size
+        }
     }
 
     suspend fun deleteSnippet(listId: Int, text: String) {
