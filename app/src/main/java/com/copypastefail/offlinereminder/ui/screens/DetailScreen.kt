@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.copypastefail.offlinereminder.R
 import com.copypastefail.offlinereminder.ui.viewmodel.SnippetDetailUiModel
@@ -91,17 +92,20 @@ fun DetailScreen(
             var name by remember { mutableStateOf("") }
 
             LaunchedEffect(list) {
-                name = list?.name ?: ""
+                name = (list?.name ?: "").take(LIST_NAME_MAX_LENGTH)
             }
 
             if (isEditing) {
+                val remainingCharacters = (LIST_NAME_MAX_LENGTH - name.length).coerceAtLeast(0)
                 TextField(
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = { name = it.take(LIST_NAME_MAX_LENGTH) },
                     label = { Text("List Name") },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
+                    singleLine = true,
+                    supportingText = { Text("$remainingCharacters characters remaining") },
                     trailingIcon = {
                         Button(onClick = { onListNameChange(name) }) {
                             Text("Save")
@@ -109,7 +113,13 @@ fun DetailScreen(
                     }
                 )
             } else {
-                Text(text = name, style = MaterialTheme.typography.headlineMedium)
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
 
             Row(
@@ -166,7 +176,12 @@ fun DetailScreen(
                                     .padding(16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(snippet, modifier = Modifier.weight(1f))
+                                Text(
+                                    snippet,
+                                    modifier = Modifier.weight(1f),
+                                    maxLines = SNIPPET_DISPLAY_MAX_LINES,
+                                    overflow = TextOverflow.Ellipsis
+                                )
                                 IconButton(onClick = {
                                     snippetToEdit = snippet
                                     isShowingEditSnippetDialog = true
@@ -213,3 +228,6 @@ fun DetailScreen(
         )
     }
 }
+
+private const val LIST_NAME_MAX_LENGTH = 60
+private const val SNIPPET_DISPLAY_MAX_LINES = 6
