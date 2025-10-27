@@ -9,6 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.copypastefail.offlinereminder.data.seed.SeedData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import net.sqlcipher.database.SupportFactory
 
 @Database(
     entities = [SnippetListEntity::class, SnippetEntity::class],
@@ -37,12 +38,17 @@ abstract class ReminderDatabase : RoomDatabase() {
         private var INSTANCE: ReminderDatabase? = null
 
         fun getDatabase(context: Context, scope: CoroutineScope? = null): ReminderDatabase {
+            val passphrase = KeyStoreManager.getOrCreateKey().encoded
+            val factory = SupportFactory(passphrase)
+
             return INSTANCE ?: synchronized(this) {
                 val builder = Room.databaseBuilder(
                     context.applicationContext,
                     ReminderDatabase::class.java,
                     "offline_snippet_reminder.db"
-                ).addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+                )
+                .openHelperFactory(factory)
+                .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
 
                 scope?.let { builder.addCallback(ReminderDatabaseCallback(it)) }
 

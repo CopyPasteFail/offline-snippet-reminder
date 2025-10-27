@@ -134,6 +134,50 @@ Grant the app the notification permission when the device asks.
 
 ---
 
+## Signed Build for Release
+
+If you want to create a signed release build, follow these steps.
+
+### Step 1: Create the Key (The One-Time Task)
+
+You only have to do this once for all your personal projects.
+
+1.  Go to **Build > Generate Signed Bundle / APK...**.
+2.  Select **APK**, click **Next**.
+3.  Click **Create new...**.
+4.  Fill it out and save the key file (e.g., `C:\Users\YourName\android_keys\personal.jks`). Remember the passwords and back up this file. This whole step takes about 60 seconds.
+
+### Step 2: Configure Android Studio to Remember Your Key for Release Builds
+
+This is the magic step that makes all future builds simple.
+
+1.  In your project, go to **File > Project Structure**.
+2.  Select **Build Variants** from the left menu.
+3.  Go to the **Signing** tab.
+4.  Click the **+** button to add a new signing configuration.
+5.  Name it something like "release-signing".
+6.  Fill in the details for the key you just created (the file path and the passwords).
+7.  Now, go back to the **Build Types** tab.
+8.  Select the **release** build type on the left.
+9.  In the properties on the right, find **Signing Config** and choose your new "release-signing" configuration from the dropdown.
+10. Click **OK**.
+
+### Step 3: The New "Simple Way" to Install a Secure Build
+
+Now that the one-time setup is complete, installing a secure, production-quality build on your phone is incredibly easy.
+
+1.  In Android Studio, open the **Build Variants** tool window (usually on the left side).
+2.  In the **Active Build Variant** column for your app module, change the selection from `debug` to `release`.
+3.  Now, just click the regular green **Run** button!
+
+Android Studio will now automatically:
+*   Build the release version of your app.
+*   Apply all the release rules (like stripping out the logs with the ProGuard rule you added).
+*   Sign it with your secure release key (using the configuration you just saved).
+*   Install it directly on your connected phone.
+
+---
+
 ## Future Enhancements
 - Manual “Next snippet” button in notifications  
 - Homescreen widget  
