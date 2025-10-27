@@ -1,6 +1,5 @@
 package com.copypastefail.offlinereminder.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,13 +9,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,6 +65,8 @@ fun DetailScreen(
     var isShowingEditSnippetDialog by remember { mutableStateOf(false) }
     var snippetToEdit by remember { mutableStateOf("") }
 
+    var isFabMenuExpanded by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -84,8 +89,46 @@ fun DetailScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            Column(horizontalAlignment = Alignment.End) {
+                if (isFabMenuExpanded) {
+                    ExtendedFloatingActionButton(
+                        text = { Text(text = stringResource(R.string.add_multiple_snippets)) },
+                        icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                        onClick = {
+                            isFabMenuExpanded = false
+                            isShowingAddMultipleSnippetsDialog = true
+                        },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    ExtendedFloatingActionButton(
+                        text = { Text(text = stringResource(R.string.add_new_snippet)) },
+                        icon = { Icon(Icons.Default.Add, contentDescription = null) },
+                        onClick = {
+                            isFabMenuExpanded = false
+                            isShowingAddSnippetDialog = true
+                        },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+                FloatingActionButton(
+                    onClick = { isFabMenuExpanded = !isFabMenuExpanded }
+                ) {
+                    Icon(
+                        imageVector = if (isFabMenuExpanded) Icons.Default.Close else Icons.Default.Add,
+                        contentDescription = stringResource(
+                            id = if (isFabMenuExpanded) {
+                                R.string.hide_add_snippet_options
+                            } else {
+                                R.string.show_add_snippet_options
+                            }
+                        )
+                    )
+                }
+            }
         }
-    ) { 
+    ) {
         Column(
             modifier = Modifier.padding(it)
         ) {
@@ -140,21 +183,6 @@ fun DetailScreen(
                     ),
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(onClick = { isShowingAddSnippetDialog = true }) {
-                    Text("Add Snippet")
-                }
-                Button(onClick = { isShowingAddMultipleSnippetsDialog = true }) {
-                    Text("Add Multiple")
-                }
             }
             Spacer(modifier = Modifier.height(16.dp))
 
