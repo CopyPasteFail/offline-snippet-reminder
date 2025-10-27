@@ -33,6 +33,7 @@ fun AddSnippetDialog(
     onDismiss: () -> Unit
 ) {
     var text by remember { mutableStateOf("") }
+    val remainingCharacters = (SNIPPET_MAX_LENGTH - text.length).coerceAtLeast(0)
 
     Dialog(onDismissRequest = onDismiss) {
         Card {
@@ -43,8 +44,12 @@ fun AddSnippetDialog(
                 Text("Add Snippet", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
                 TextField(
                     value = text,
-                    onValueChange = { text = it },
-                    label = { Text("Snippet Text") }
+                    onValueChange = {
+                        text = it.take(SNIPPET_MAX_LENGTH)
+                    },
+                    label = { Text("Snippet Text") },
+                    supportingText = { Text("$remainingCharacters characters remaining") },
+                    maxLines = SNIPPET_TEXTFIELD_MAX_LINES
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -76,6 +81,7 @@ fun AddMultipleSnippetsDialog(
     onDismiss: () -> Unit
 ) {
     var text by remember { mutableStateOf("") }
+    val remainingCharacters = (MULTI_SNIPPET_MAX_LENGTH - text.length).coerceAtLeast(0)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -83,15 +89,26 @@ fun AddMultipleSnippetsDialog(
         text = {
             TextField(
                 value = text,
-                onValueChange = { text = it },
+                onValueChange = {
+                    text = it.take(MULTI_SNIPPET_MAX_LENGTH)
+                },
                 placeholder = { Text("Enter snippets, separated by an empty line.") },
-                supportingText = { Text("Snippets are separated by at least one empty line.") }
+                supportingText = {
+                    Column {
+                        Text("Snippets are separated by at least one empty line.")
+                        Text("$remainingCharacters characters remaining")
+                    }
+                },
+                maxLines = MULTI_SNIPPET_TEXTFIELD_MAX_LINES
             )
         },
         confirmButton = {
             Button(
                 onClick = {
-                    val snippets = text.split(Regex("\n\n+")).map { it.trim() }.filter { it.isNotBlank() }
+                    val snippets = text
+                        .split(Regex("\n\n+"))
+                        .map { it.trim().take(SNIPPET_MAX_LENGTH) }
+                        .filter { it.isNotBlank() }
                     onAddMultipleSnippets(snippets)
                     onDismiss()
                 }
@@ -130,11 +147,15 @@ fun ChangeFrequencyDialog(
                 TextField(
                     value = frequency,
                     onValueChange = {
-                        frequency = it
+                        val digitsOnly = it.filter(Char::isDigit)
+                        if (digitsOnly.length <= FREQUENCY_MAX_LENGTH) {
+                            frequency = digitsOnly
+                        }
                         isError = false
                     },
                     label = { Text("Frequency") },
-                    isError = isError
+                    isError = isError,
+                    singleLine = true
                 )
                 if (isError) {
                     Text(
@@ -211,7 +232,8 @@ fun EditSnippetDialog(
     onDismiss: () -> Unit,
     initialText: String
 ) {
-    var text by remember { mutableStateOf(initialText) }
+    var text by remember { mutableStateOf(initialText.take(SNIPPET_MAX_LENGTH)) }
+    val remainingCharacters = (SNIPPET_MAX_LENGTH - text.length).coerceAtLeast(0)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -219,8 +241,12 @@ fun EditSnippetDialog(
         text = {
             TextField(
                 value = text,
-                onValueChange = { text = it },
-                label = { Text("Snippet Text") }
+                onValueChange = {
+                    text = it.take(SNIPPET_MAX_LENGTH)
+                },
+                label = { Text("Snippet Text") },
+                supportingText = { Text("$remainingCharacters characters remaining") },
+                maxLines = SNIPPET_TEXTFIELD_MAX_LINES
             )
         },
         confirmButton = {
@@ -267,3 +293,9 @@ fun DeleteConfirmationDialog(
         }
     )
 }
+
+private const val SNIPPET_MAX_LENGTH = 500
+private const val MULTI_SNIPPET_MAX_LENGTH = 4000
+private const val FREQUENCY_MAX_LENGTH = 4
+private const val SNIPPET_TEXTFIELD_MAX_LINES = 6
+private const val MULTI_SNIPPET_TEXTFIELD_MAX_LINES = 10
