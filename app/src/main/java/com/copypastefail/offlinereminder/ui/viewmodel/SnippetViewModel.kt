@@ -78,6 +78,12 @@ class SnippetViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun addMultipleSnippets(listId: Int, snippets: List<String>) {
+        viewModelScope.launch {
+            repository.addSnippets(listId, snippets)
+        }
+    }
+
     fun deleteSnippet(listId: Int, text: String) {
         viewModelScope.launch {
             repository.deleteSnippet(listId, text)

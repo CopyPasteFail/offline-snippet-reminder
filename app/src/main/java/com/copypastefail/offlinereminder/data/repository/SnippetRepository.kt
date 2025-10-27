@@ -53,6 +53,14 @@ class SnippetRepository(private val dao: ReminderDao) {
         dao.insertSnippet(SnippetEntity(0, listId, text, newIndex))
     }
 
+    suspend fun addSnippets(listId: Int, snippets: List<String>) {
+        val currentSize = dao.getSnippetsForList(listId).size
+        val newSnippets = snippets.mapIndexed { index, text ->
+            SnippetEntity(0, listId, text, currentSize + index)
+        }
+        dao.insertSnippets(newSnippets)
+    }
+
     suspend fun deleteSnippet(listId: Int, text: String) {
         dao.getSnippetByText(listId, text)?.let { dao.deleteSnippet(it) }
     }

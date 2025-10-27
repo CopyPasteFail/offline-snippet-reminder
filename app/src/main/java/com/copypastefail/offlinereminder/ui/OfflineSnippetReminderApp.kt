@@ -43,6 +43,7 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
                             viewModel.updateFrequency(listId, frequency, timeUnit)
                         },
                         onAddSnippet = { text -> viewModel.addSnippet(listId, text) },
+                        onAddMultipleSnippets = { snippets -> viewModel.addMultipleSnippets(listId, snippets) },
                         onDeleteSnippet = { text -> viewModel.deleteSnippet(listId, text) },
                         onEditSnippet = { oldText, newText ->
                             viewModel.editSnippet(listId, oldText, newText)
