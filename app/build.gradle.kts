@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -12,8 +13,8 @@ android {
         applicationId = "com.copypastefail.offlinereminder"
         minSdk = 31
         targetSdk = 36
-        versionCode = 3 // Increment this for new releases
-        versionName = "1.2" // Change this to your desired version string
+        versionCode = 4 // Increment this for new releases
+        versionName = "1.3" // Change this to your desired version string
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -48,10 +49,6 @@ android {
 
     buildFeatures {
         compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
     }
 
     packaging {
