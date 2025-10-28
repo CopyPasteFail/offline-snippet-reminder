@@ -11,3 +11,7 @@ build/
 
 # Local configuration
 local.properties
+/app/release/offline-snippet-reminder.apk
+/app/release/baselineProfiles/0/offline-snippet-reminder.dm
+/app/release/baselineProfiles/1/offline-snippet-reminder.dm
+/app/release/output-metadata.json
