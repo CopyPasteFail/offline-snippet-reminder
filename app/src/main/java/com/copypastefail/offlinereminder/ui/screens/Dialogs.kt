@@ -295,7 +295,7 @@ fun DeleteConfirmationDialog(
 }
 
 private const val SNIPPET_MAX_LENGTH = 500
-private const val MULTI_SNIPPET_MAX_LENGTH = 4000
+private const val MULTI_SNIPPET_MAX_LENGTH = 30000
 private const val FREQUENCY_MAX_LENGTH = 4
 private const val SNIPPET_TEXTFIELD_MAX_LINES = 6
 private const val MULTI_SNIPPET_TEXTFIELD_MAX_LINES = 10
