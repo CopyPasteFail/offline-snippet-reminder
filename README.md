@@ -8,13 +8,13 @@ The app acts as a **personal recall tool** — snippets you’ve saved reappear 
 
 ## Architecture
 
-| Layer | Component | Description |
-|-------|------------|-------------|
-| **UI** | Jetpack Compose | Modern declarative UI |
-| **Storage** | Room ORM | Local SQLite persistence |
-| **Scheduling** | WorkManager | Reliable background jobs |
-| **Notifications** | NotificationCompat | System reminders |
-| **Language** | Kotlin | Clean and idiomatic |
+| Layer             | Component          | Description              |
+|-------------------|--------------------|--------------------------|
+| **UI**            | Jetpack Compose    | Modern declarative UI    |
+| **Storage**       | Room ORM           | Local SQLite persistence |
+| **Scheduling**    | WorkManager        | Reliable background jobs |
+| **Notifications** | NotificationCompat | System reminders         |
+| **Language**      | Kotlin             | Clean and idiomatic      |
 
 ---
 

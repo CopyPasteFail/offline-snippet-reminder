@@ -10,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId = "com.copypastefail.offlinereminder"
-        minSdk = 30
+        minSdk = 31
         targetSdk = 36
-        versionCode = 2 // Increment this for new releases
-        versionName = "1.1" // Change this to your desired version string
+        versionCode = 3 // Increment this for new releases
+        versionName = "1.2" // Change this to your desired version string
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
