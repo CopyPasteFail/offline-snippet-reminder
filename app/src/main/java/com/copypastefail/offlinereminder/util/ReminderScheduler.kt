@@ -8,7 +8,7 @@ import com.copypastefail.offlinereminder.data.local.SnippetListEntity
 import com.copypastefail.offlinereminder.worker.ReminderWorker
 import java.util.concurrent.TimeUnit
 
-class ReminderScheduler(private val context: Context) {
+class ReminderScheduler(context: Context) {
 
     private val workManager: WorkManager = WorkManager.getInstance(context)
 

@@ -10,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId = "com.copypastefail.offlinereminder"
-        minSdk = 30
+        minSdk = 31
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 3 // Increment this for new releases
+        versionName = "1.2" // Change this to your desired version string
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -25,6 +25,15 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    applicationVariants.all {
+        if (buildType.name == "release") {
+            outputs.all {
+                val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+                output.outputFileName = "offline-snippet-reminder.apk"
+            }
         }
     }
 

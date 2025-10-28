@@ -23,16 +23,8 @@ class SnippetRepository(private val dao: ReminderDao) {
 
     suspend fun getListById(listId: Int): SnippetListEntity? = dao.getListById(listId)
 
-    suspend fun getSnippetsForList(listId: Int): List<SnippetEntity> = dao.getSnippetsForList(listId)
-
-    suspend fun getAllListsOnce(): List<SnippetListEntity> = dao.getAllLists()
-
     suspend fun setListActive(listId: Int, active: Boolean) {
         dao.updateActiveState(listId, active)
-    }
-
-    suspend fun updateCurrentIndex(listId: Int, index: Int) {
-        dao.updateCurrentIndex(listId, index)
     }
 
     suspend fun createNewList(): Int {

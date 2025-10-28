@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -74,7 +74,7 @@ fun DetailScreen(
                 title = { Text(text = stringResource(id = R.string.screen_title_details)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                     }
                 },
                 actions = {
@@ -142,7 +142,7 @@ fun DetailScreen(
                 val remainingCharacters = (LIST_NAME_MAX_LENGTH - name.length).coerceAtLeast(0)
                 TextField(
                     value = name,
-                    onValueChange = { name = it.take(LIST_NAME_MAX_LENGTH) },
+                    onValueChange = { it -> name = it.take(LIST_NAME_MAX_LENGTH) },
                     label = { Text("List Name") },
                     modifier = Modifier
                         .fillMaxWidth()
