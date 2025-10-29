@@ -178,6 +178,16 @@ Android Studio will now automatically:
 
 ---
 
+## Current Warnings
+
+These warnings are present in the build but are not currently harmful to the functionality of the app.
+
+- `Warning:(52, 5) 'composeOptions(org.gradle.api.Action<com.android.build.api.dsl.ComposeOptions>)' is marked unstable with @Incubating`
+- `Warning:(82, 5) This library supports using KSP instead of kapt, which greatly improves performance. Learn more: https://developer.android.com/studio/build/migrate-to-ksp`
+- `Warning:(85, 20) The native library 'arm64-v8a/libsqlcipher.so' (from 'net.zetetic:android-database-sqlcipher:4.5.4') is not 16 KB aligned`
+
+---
+
 ## Future Enhancements
 - Manual “Next snippet” button in notifications  
 - Homescreen widget  
