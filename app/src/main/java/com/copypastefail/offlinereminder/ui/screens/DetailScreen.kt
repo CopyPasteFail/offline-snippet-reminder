@@ -232,7 +232,7 @@ fun DetailScreen(
         list?.let {
             RenameListDialog(
                 onDismiss = { isShowingRenameDialog = false },
-                onRename = {
+                onRename = { it ->
                     onListNameChange(it)
                     isShowingRenameDialog = false
                 },
