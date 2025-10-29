@@ -1,3 +1,4 @@
+
 package com.copypastefail.offlinereminder
 
 import android.content.Context
@@ -26,7 +27,8 @@ class ReminderWorkerTest {
     @Test
     fun testReminderWorker() {
         val inputData = workDataOf(
-            ReminderWorker.KEY_LIST_ID to 1
+            "id" to 1,
+            "message" to "Test message"
         )
 
         val worker = TestListenableWorkerBuilder<ReminderWorker>(
