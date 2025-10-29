@@ -174,7 +174,7 @@ fun DetailScreen(
                 Switch(checked = list?.isActive ?: false, onCheckedChange = onToggleReminders)
             }
 
-            list?.let {
+            list?.let { it ->
                 Text(
                     text = stringResource(
                         R.string.notification_frequency_label,
