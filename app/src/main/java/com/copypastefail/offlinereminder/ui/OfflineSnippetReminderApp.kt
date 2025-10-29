@@ -32,15 +32,15 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
 
 
     OfflineSnippetReminderTheme {
-        NavHost(navController = navController, startDestination = NavRoutes.Lists) {
-            composable(NavRoutes.Lists) {
+        NavHost(navController = navController, startDestination = NavRoutes.LISTS) {
+            composable(NavRoutes.LISTS) {
                 SnippetListsScreen(
                     lists = snippetLists,
                     onListSelected = { listId -> navController.navigate(NavRoutes.detailRoute(listId)) },
                     onCreateNewList = { viewModel.onCreateListRequest() })
             }
-            composable(NavRoutes.Detail) { backStackEntry ->
-                val listId = backStackEntry.arguments?.getString(NavRoutes.DetailArgs.listId)?.toInt()
+            composable(NavRoutes.DETAIL) { backStackEntry ->
+                val listId = backStackEntry.arguments?.getString(NavRoutes.DetailArgs.LISTID)?.toInt()
                 if (listId != null) {
                     val list by viewModel.observeList(listId).collectAsState(initial = null)
                     DetailScreen(
