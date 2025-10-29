@@ -41,7 +41,7 @@ fun AddSnippetDialog(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Add Snippet", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+                Text("Add Snippet", style = MaterialTheme.typography.headlineSmall)
                 TextField(
                     value = text,
                     onValueChange = {
@@ -135,7 +135,7 @@ fun ChangeFrequencyDialog(
     var frequency by remember { mutableStateOf(currentFrequency.toString()) }
     var expanded by remember { mutableStateOf(false) }
     var selectedTimeUnit by remember { mutableStateOf(currentTimeUnit) }
-    val timeUnitOptions = TimeUnit.values().filter { it >= TimeUnit.MINUTES }
+    val timeUnitOptions = TimeUnit.entries.filter { it >= TimeUnit.MINUTES }
     var isError by remember { mutableStateOf(false) }
 
 
@@ -284,6 +284,44 @@ fun DeleteConfirmationDialog(
                 }
             ) {
                 Text("Delete")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+fun RenameListDialog(
+    onDismiss: () -> Unit,
+    onRename: (String) -> Unit,
+    initialName: String
+) {
+    var newName by remember { mutableStateOf(initialName) }
+    val isNameChanged = newName != initialName
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Rename List") },
+        text = {
+            TextField(
+                value = newName,
+                onValueChange = { newName = it },
+                label = { Text("List Name") },
+                singleLine = true
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onRename(newName)
+                },
+                enabled = isNameChanged
+            ) {
+                Text("Update")
             }
         },
         dismissButton = {

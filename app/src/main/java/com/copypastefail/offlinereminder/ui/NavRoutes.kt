@@ -1,12 +1,12 @@
 package com.copypastefail.offlinereminder.ui
 
 object NavRoutes {
-    const val Lists = "lists"
-    private const val DetailBase = "detail"
+    const val LISTS = "lists"
+    private const val DETAILBASE = "detail"
     object DetailArgs {
-        const val listId = "listId"
+        const val LISTID = "listId"
     }
-    const val Detail = "$DetailBase/{${DetailArgs.listId}}"
+    const val DETAIL = "$DETAILBASE/{${DetailArgs.LISTID}}"
 
-    fun detailRoute(listId: Int): String = "$DetailBase/$listId"
+    fun detailRoute(listId: Int): String = "$DETAILBASE/$listId"
 }
