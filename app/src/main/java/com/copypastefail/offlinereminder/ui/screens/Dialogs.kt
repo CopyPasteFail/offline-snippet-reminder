@@ -294,6 +294,44 @@ fun DeleteConfirmationDialog(
     )
 }
 
+@Composable
+fun RenameListDialog(
+    onDismiss: () -> Unit,
+    onRename: (String) -> Unit,
+    initialName: String
+) {
+    var newName by remember { mutableStateOf(initialName) }
+    val isNameChanged = newName != initialName
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Rename List") },
+        text = {
+            TextField(
+                value = newName,
+                onValueChange = { newName = it },
+                label = { Text("List Name") },
+                singleLine = true
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onRename(newName)
+                },
+                enabled = isNameChanged
+            ) {
+                Text("Update")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
 private const val SNIPPET_MAX_LENGTH = 500
 private const val MULTI_SNIPPET_MAX_LENGTH = 30000
 private const val FREQUENCY_MAX_LENGTH = 4

@@ -26,7 +26,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,11 +57,11 @@ fun DetailScreen(
     onListNameChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isEditing by remember { mutableStateOf(false) }
     var isShowingAddSnippetDialog by remember { mutableStateOf(false) }
     var isShowingAddMultipleSnippetsDialog by remember { mutableStateOf(false) }
     var isShowingFrequencyDialog by remember { mutableStateOf(false) }
     var isShowingEditSnippetDialog by remember { mutableStateOf(false) }
+    var isShowingRenameDialog by remember { mutableStateOf(false) }
     var snippetToEdit by remember { mutableStateOf("") }
 
     var isFabMenuExpanded by remember { mutableStateOf(false) }
@@ -78,8 +77,8 @@ fun DetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { isEditing = !isEditing }) {
-                        Icon(Icons.Default.Edit, "Edit")
+                    IconButton(onClick = { isShowingRenameDialog = true }) {
+                        Icon(Icons.Default.Edit, "Rename List")
                     }
                     IconButton(onClick = { isShowingFrequencyDialog = true }) {
                         Icon(Icons.Default.Schedule, "Change Frequency")
@@ -132,38 +131,13 @@ fun DetailScreen(
         Column(
             modifier = Modifier.padding(it)
         ) {
-            var name by remember { mutableStateOf("") }
-
-            LaunchedEffect(list) {
-                name = (list?.name ?: "").take(LIST_NAME_MAX_LENGTH)
-            }
-
-            if (isEditing) {
-                val remainingCharacters = (LIST_NAME_MAX_LENGTH - name.length).coerceAtLeast(0)
-                TextField(
-                    value = name,
-                    onValueChange = { it -> name = it.take(LIST_NAME_MAX_LENGTH) },
-                    label = { Text("List Name") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    singleLine = true,
-                    supportingText = { Text("$remainingCharacters characters remaining") },
-                    trailingIcon = {
-                        Button(onClick = { onListNameChange(name) }) {
-                            Text("Save")
-                        }
-                    }
-                )
-            } else {
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.headlineMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
+            Text(
+                text = list?.name ?: "",
+                style = MaterialTheme.typography.headlineMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -255,7 +229,19 @@ fun DetailScreen(
             initialText = snippetToEdit
         )
     }
+
+    if (isShowingRenameDialog) {
+        list?.let {
+            RenameListDialog(
+                onDismiss = { isShowingRenameDialog = false },
+                onRename = {
+                    onListNameChange(it)
+                    isShowingRenameDialog = false
+                },
+                initialName = it.name
+            )
+        }
+    }
 }
 
-private const val LIST_NAME_MAX_LENGTH = 60
 private const val SNIPPET_DISPLAY_MAX_LINES = 6

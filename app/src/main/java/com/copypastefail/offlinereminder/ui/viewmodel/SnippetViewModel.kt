@@ -2,6 +2,7 @@ package com.copypastefail.offlinereminder.ui.viewmodel
 
 import android.app.Application
 import android.content.res.Resources
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -14,9 +15,11 @@ import com.copypastefail.offlinereminder.data.repository.SnippetRepository
 import com.copypastefail.offlinereminder.util.ReminderScheduler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -31,6 +34,9 @@ class SnippetViewModel(application: Application) : AndroidViewModel(application)
 
     private val _pendingDetailListId = MutableStateFlow<Int?>(null)
     val pendingDetailListId: StateFlow<Int?> = _pendingDetailListId.asStateFlow()
+
+    private val _toastMessages = MutableSharedFlow<String>()
+    val toastMessages = _toastMessages.asSharedFlow()
 
     val snippetLists: StateFlow<List<SnippetListUiModel>> = repository.observeListsWithSnippets()
         .map { lists -> lists.map { it.toListUiModel(app) } }
@@ -97,9 +103,10 @@ class SnippetViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun updateListName(listId: Int, newName: String) {
+    fun renameList(listId: Int, newName: String) {
         viewModelScope.launch {
             repository.updateListName(listId, newName)
+            _toastMessages.emit("List renamed to '$newName'")
         }
     }
 

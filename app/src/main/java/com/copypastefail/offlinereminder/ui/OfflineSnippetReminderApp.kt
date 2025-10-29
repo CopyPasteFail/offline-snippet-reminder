@@ -1,5 +1,6 @@
 package com.copypastefail.offlinereminder.ui
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -7,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -22,11 +24,18 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
     val snippetLists by viewModel.snippetLists.collectAsState()
     var listIdToDelete by remember { mutableStateOf<Int?>(null) }
     val pendingDetailListId by viewModel.pendingDetailListId.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(pendingDetailListId) {
         pendingDetailListId?.let { listId ->
             navController.navigate(NavRoutes.detailRoute(listId))
             viewModel.consumePendingDetailRequest()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.toastMessages.collect {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -57,7 +66,7 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
                         onEditSnippet = { oldText, newText ->
                             viewModel.editSnippet(listId, oldText, newText)
                         },
-                        onListNameChange = { newName -> viewModel.updateListName(listId, newName) })
+                        onListNameChange = { newName -> viewModel.renameList(listId, newName) })
                 }
             }
         }
