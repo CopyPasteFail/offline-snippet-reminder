@@ -147,7 +147,8 @@ data class SnippetListUiModel(
     val name: String,
     val frequencyLabel: String,
     val statusLabel: String,
-    val isActive: Boolean
+    val isActive: Boolean,
+    val snippetCount: Int
 )
 
 data class SnippetDetailUiModel(
@@ -175,7 +176,8 @@ private fun SnippetListWithSnippets.toListUiModel(app: OfflineSnippetReminderApp
         name = list.name,
         frequencyLabel = frequencyLabel,
         statusLabel = statusLabel,
-        isActive = list.isActive
+        isActive = list.isActive,
+        snippetCount = snippets.size
     )
 }
 

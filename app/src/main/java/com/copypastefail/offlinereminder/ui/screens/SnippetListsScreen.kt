@@ -109,11 +109,25 @@ private fun SnippetListItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Text(
-                text = stringResource(id = R.string.snippet_list_frequency_label, list.frequencyLabel),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(top = 8.dp)
-            )
+            val snippetCount = list.snippetCount
+            val snippetCountText = if (snippetCount > 0) {
+                stringResource(id = R.string.snippet_count, snippetCount)
+            } else {
+                stringResource(id = R.string.no_snippets_in_list)
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
+                Text(
+                    text = snippetCountText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Text(
+                    text = stringResource(id = R.string.snippet_list_frequency_label, list.frequencyLabel),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }
