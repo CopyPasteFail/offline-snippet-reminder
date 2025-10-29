@@ -135,7 +135,7 @@ fun ChangeFrequencyDialog(
     var frequency by remember { mutableStateOf(currentFrequency.toString()) }
     var expanded by remember { mutableStateOf(false) }
     var selectedTimeUnit by remember { mutableStateOf(currentTimeUnit) }
-    val timeUnitOptions = TimeUnit.values().filter { it >= TimeUnit.MINUTES }
+    val timeUnitOptions = TimeUnit.entries.filter { it >= TimeUnit.MINUTES }
     var isError by remember { mutableStateOf(false) }
 
 
