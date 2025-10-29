@@ -2,7 +2,6 @@ package com.copypastefail.offlinereminder.ui.viewmodel
 
 import android.app.Application
 import android.content.res.Resources
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
