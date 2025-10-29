@@ -41,7 +41,7 @@ fun AddSnippetDialog(
                 modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Add Snippet", style = androidx.compose.material3.MaterialTheme.typography.headlineSmall)
+                Text("Add Snippet", style = MaterialTheme.typography.headlineSmall)
                 TextField(
                     value = text,
                     onValueChange = {
