@@ -92,4 +92,5 @@ dependencies {
     androidTestImplementation("androidx.work:work-testing:2.11.0")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
 }
