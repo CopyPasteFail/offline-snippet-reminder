@@ -13,6 +13,7 @@
     <string name="notification_frequency_label">Notification every %1$d %2$s</string>
     <string name="show_add_snippet_options">Show add snippet options</string>
     <string name="hide_add_snippet_options">Hide add snippet options</string>
+    <string name="notification_permission_denied">Notification permission denied. Reminders will not work.</string>
     <plurals name="frequency_seconds_plurals">
         <item quantity="one">%d second</item>
         <item quantity="other">%d seconds</item>

@@ -19,7 +19,10 @@ import com.copypastefail.offlinereminder.ui.theme.OfflineSnippetReminderTheme
 import com.copypastefail.offlinereminder.ui.viewmodel.SnippetViewModel
 
 @Composable
-fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
+fun OfflineSnippetReminderApp(
+    viewModel: SnippetViewModel,
+    onToggleReminders: (Int, Boolean) -> Unit
+) {
     val navController = rememberNavController()
     val snippetLists by viewModel.snippetLists.collectAsState()
     var listIdToDelete by remember { mutableStateOf<Int?>(null) }
@@ -55,7 +58,7 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
                     DetailScreen(
                         list = list,
                         onBack = { navController.popBackStack() },
-                        onToggleReminders = { enabled -> viewModel.updateReminderState(listId, enabled) },
+                        onToggleReminders = { enabled -> onToggleReminders(listId, enabled) },
                         onDeleteList = { listIdToDelete = listId },
                         onFrequencyChange = { frequency, timeUnit ->
                             viewModel.updateFrequency(listId, frequency, timeUnit)
