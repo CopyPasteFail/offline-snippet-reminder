@@ -29,7 +29,7 @@ object NotificationHelper {
             context,
             listId,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or pendingIntentImmutableFlag()
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -68,7 +68,4 @@ object NotificationHelper {
         val manager = context.getSystemService(NotificationManager::class.java)
         manager?.createNotificationChannel(channel)
     }
-
-    private fun pendingIntentImmutableFlag(): Int =
-        PendingIntent.FLAG_IMMUTABLE
 }
