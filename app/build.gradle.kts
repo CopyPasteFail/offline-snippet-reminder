@@ -15,8 +15,8 @@ android {
         applicationId = "com.copypastefail.offlinereminder"
         minSdk = 31
         targetSdk = 36
-        versionCode = 8 // Increment this for new releases
-        versionName = "1.6.1" // Change this to your desired version string
+        versionCode = 9 // Increment this for new releases
+        versionName = "1.6.2" // Change this to your desired version string
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
