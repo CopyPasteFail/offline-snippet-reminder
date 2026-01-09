@@ -38,6 +38,7 @@ class ReminderWorker(
             context = applicationContext,
             listId = list.id,
             listName = list.name,
+            snippetId = snippet.id,
             snippetText = snippet.text
         )
 

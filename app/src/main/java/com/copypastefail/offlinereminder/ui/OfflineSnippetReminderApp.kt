@@ -24,6 +24,7 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
     val snippetLists by viewModel.snippetLists.collectAsState()
     var listIdToDelete by remember { mutableStateOf<Int?>(null) }
     val pendingDetailListId by viewModel.pendingDetailListId.collectAsState()
+    val pendingSnippetRequest by viewModel.pendingSnippetRequest.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(pendingDetailListId) {
@@ -52,6 +53,9 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
                 val listId = backStackEntry.arguments?.getString(NavRoutes.DetailArgs.LISTID)?.toInt()
                 if (listId != null) {
                     val list by viewModel.observeList(listId).collectAsState(initial = null)
+                    val pendingSnippetIdForList = pendingSnippetRequest
+                        ?.takeIf { it.listId == listId }
+                        ?.snippetId
                     DetailScreen(
                         list = list,
                         onBack = { navController.popBackStack() },
@@ -66,7 +70,9 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
                         onEditSnippet = { oldText, newText ->
                             viewModel.editSnippet(listId, oldText, newText)
                         },
-                        onListNameChange = { newName -> viewModel.renameList(listId, newName) })
+                        onListNameChange = { newName -> viewModel.renameList(listId, newName) },
+                        pendingSnippetId = pendingSnippetIdForList,
+                        onConsumePendingSnippet = { viewModel.consumePendingSnippetRequest() })
                 }
             }
         }

@@ -34,6 +34,9 @@ class SnippetViewModel(application: Application) : AndroidViewModel(application)
     private val _pendingDetailListId = MutableStateFlow<Int?>(null)
     val pendingDetailListId: StateFlow<Int?> = _pendingDetailListId.asStateFlow()
 
+    private val _pendingSnippetRequest = MutableStateFlow<PendingSnippetRequest?>(null)
+    val pendingSnippetRequest: StateFlow<PendingSnippetRequest?> = _pendingSnippetRequest.asStateFlow()
+
     private val _toastMessages = MutableSharedFlow<String>()
     val toastMessages = _toastMessages.asSharedFlow()
 
@@ -113,8 +116,17 @@ class SnippetViewModel(application: Application) : AndroidViewModel(application)
         _pendingDetailListId.value = listId
     }
 
+    fun requestOpenSnippet(listId: Int, snippetId: Int) {
+        _pendingDetailListId.value = listId
+        _pendingSnippetRequest.value = PendingSnippetRequest(listId, snippetId)
+    }
+
     fun consumePendingDetailRequest() {
         _pendingDetailListId.value = null
+    }
+
+    fun consumePendingSnippetRequest() {
+        _pendingSnippetRequest.value = null
     }
 
     fun updateFrequency(listId: Int, frequency: Long, timeUnit: TimeUnit) {
@@ -159,8 +171,18 @@ data class SnippetDetailUiModel(
     val frequencySeconds: Long,
     val timeUnit: TimeUnit,
     val nextReminderDescription: String,
-    val snippets: List<String>,
+    val snippets: List<SnippetUiModel>,
     val isActive: Boolean
+)
+
+data class SnippetUiModel(
+    val id: Int,
+    val text: String
+)
+
+data class PendingSnippetRequest(
+    val listId: Int,
+    val snippetId: Int
 )
 
 private fun SnippetListWithSnippets.toListUiModel(app: OfflineSnippetReminderApplication): SnippetListUiModel {
@@ -194,7 +216,7 @@ private fun SnippetListWithSnippets.toDetailUiModel(app: OfflineSnippetReminderA
         frequencySeconds = list.frequencySeconds,
         timeUnit = timeUnit,
         nextReminderDescription = nextReminder,
-        snippets = snippets.sortedBy { it.orderIndex }.map { it.text },
+        snippets = snippets.sortedBy { it.orderIndex }.map { SnippetUiModel(it.id, it.text) },
         isActive = list.isActive
     )
 }

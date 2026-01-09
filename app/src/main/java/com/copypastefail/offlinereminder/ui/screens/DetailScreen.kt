@@ -15,6 +15,10 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -22,11 +26,14 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +60,8 @@ fun DetailScreen(
     onDeleteSnippet: (String) -> Unit,
     onEditSnippet: (String, String) -> Unit,
     onListNameChange: (String) -> Unit,
+    pendingSnippetId: Int?,
+    onConsumePendingSnippet: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isShowingAddSnippetDialog by remember { mutableStateOf(false) }
@@ -63,6 +72,20 @@ fun DetailScreen(
     var snippetToEdit by remember { mutableStateOf("") }
 
     var isFabMenuExpanded by remember { mutableStateOf(false) }
+    var isSnippetSheetVisible by remember { mutableStateOf(false) }
+    var snippetIdForSheet by remember { mutableStateOf<Int?>(null) }
+
+    LaunchedEffect(pendingSnippetId, list?.snippets) {
+        val pendingId = pendingSnippetId
+        val hasSnippet = pendingId != null && list?.snippets?.any { it.id == pendingId } == true
+        if (hasSnippet) {
+            snippetIdForSheet = pendingId
+            isSnippetSheetVisible = true
+            onConsumePendingSnippet()
+        } else if (pendingId != null && list != null) {
+            onConsumePendingSnippet()
+        }
+    }
 
     Scaffold(
         modifier = modifier,
@@ -164,7 +187,7 @@ fun DetailScreen(
                 Text("No snippets in this list.")
             } else {
                 LazyColumn {
-                    items(list.snippets) { snippet ->
+                    items(list.snippets, key = { it.id }) { snippet ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -177,18 +200,18 @@ fun DetailScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    snippet,
+                                    snippet.text,
                                     modifier = Modifier.weight(1f),
                                     maxLines = SNIPPET_DISPLAY_MAX_LINES,
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 IconButton(onClick = {
-                                    snippetToEdit = snippet
+                                    snippetToEdit = snippet.text
                                     isShowingEditSnippetDialog = true
                                 }) {
                                     Icon(Icons.Default.Edit, "Edit")
                                 }
-                                IconButton(onClick = { onDeleteSnippet(snippet) }) {
+                                IconButton(onClick = { onDeleteSnippet(snippet.text) }) {
                                     Icon(Icons.Default.Delete, "Delete")
                                 }
                             }
@@ -238,6 +261,45 @@ fun DetailScreen(
                 },
                 initialName = it.name
             )
+        }
+    }
+
+    val snippetForSheet = list?.snippets?.firstOrNull { it.id == snippetIdForSheet }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    if (isSnippetSheetVisible && snippetForSheet != null) {
+        ModalBottomSheet(
+            onDismissRequest = { isSnippetSheetVisible = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.75f)
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+            ) {
+                Text(
+                    text = list?.name.orEmpty(),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = snippetForSheet.text,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.tap_outside_to_close),
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
         }
     }
 }

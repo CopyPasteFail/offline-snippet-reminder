@@ -27,12 +27,16 @@ class MainActivity : ComponentActivity() {
 
     private fun handleIntentExtras() {
         val listId = intent?.getIntExtra(EXTRA_LIST_ID, -1) ?: -1
-        if (listId != -1) {
+        val snippetId = intent?.getIntExtra(EXTRA_SNIPPET_ID, -1) ?: -1
+        if (listId != -1 && snippetId != -1) {
+            viewModel.requestOpenSnippet(listId, snippetId)
+        } else if (listId != -1) {
             viewModel.requestOpenList(listId)
         }
     }
 
     companion object {
         const val EXTRA_LIST_ID = "extra_list_id"
+        const val EXTRA_SNIPPET_ID = "extra_snippet_id"
     }
 }

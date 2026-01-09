@@ -11,6 +11,8 @@
     <string name="screen_title_details">Details</string>
     <string name="reminders_enabled_label">Reminders enabled</string>
     <string name="notification_frequency_label">Notification every %1$d %2$s</string>
+    <string name="notification_truncated_summary">Open the app to read the full snippet</string>
+    <string name="tap_outside_to_close">Tap outside to close</string>
     <string name="show_add_snippet_options">Show add snippet options</string>
     <string name="hide_add_snippet_options">Hide add snippet options</string>
     <string name="snippet_count">Snippets: %d</string>
