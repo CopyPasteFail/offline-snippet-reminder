@@ -10,14 +10,8 @@ A **personal offline Android app**, designed for sideloading (no Play Store depe
 ### 1. Snippet Lists
 - User can create **multiple lists** (e.g., “Motivation”, “Mindfulness”, “Learning”).
 - Each list contains **text snippets** (plain text).
-- Each list defines its **notification frequency**:
-  - Every 30 minutes  
-  - Every 1 hour  
-  - Every 3 hours  
-  - Every 6 hours  
-  - Every 12 hours  
-  - Every 24 hours (daily)  
-  - Every week (7 days)
+- Each list defines its **notification frequency** using a numeric value plus a time unit
+  (minutes, hours, days). The minimum allowed interval is 15 minutes.
 - Each snippet list cycles through its items sequentially — when it reaches the end, it wraps back to the first snippet.
 
 ### 2. Notifications
@@ -43,7 +37,6 @@ A **personal offline Android app**, designed for sideloading (no Play Store depe
 
 ### 1. Tech Stack
 - **Language:** Kotlin  
-- **Min SDK:** 26 (Android 8.0, for WorkManager support)  
 - **UI:** Jetpack Compose (preferred) or XML if simpler  
 - **Persistence:** Room (SQLite ORM)  
 - **Scheduling:** WorkManager (for repeating background jobs)  
@@ -53,22 +46,21 @@ A **personal offline Android app**, designed for sideloading (no Play Store depe
 
 ## 2. Data Model
 
-```kotlin
-@Entity(tableName = "snippet_lists")
-data class SnippetList(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String,
-    val frequencyMinutes: Long // e.g., 30, 60, 1440, etc.
-)
+Define two tables: `SnippetList` and `Snippet`.
 
-@Entity(tableName = "snippets")
-data class Snippet(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val listId: Int,
-    val text: String,
-    val orderIndex: Int
-)
-```
+`SnippetList` fields:
+- `id` (Long, primary key)
+- `name` (String)
+- `frequencyMinutes` (Int)
+- `enabled` (Boolean)
+- `currentIndex` (Int)
+- `lastNotifiedAt` (Long, epoch millis)
+
+`Snippet` fields:
+- `id` (Long, primary key)
+- `listId` (Long, foreign key to `SnippetList.id`)
+- `text` (String)
+- `position` (Int)
 
 You can also add a `currentIndex` field in `SnippetList` to track which snippet was last shown.
 
@@ -77,21 +69,7 @@ You can also add a `currentIndex` field in `SnippetList` to track which snippet 
 ## 3. Scheduling Logic
 
 ### WorkManager Job
-Use a **PeriodicWorkRequestBuilder** for each list:
-
-```kotlin
-val workRequest = PeriodicWorkRequestBuilder<ReminderWorker>(
-    repeatInterval = list.frequencyMinutes,
-    repeatIntervalTimeUnit = TimeUnit.MINUTES
-).setInputData(workDataOf("listId" to list.id))
- .build()
-
-WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-    "reminder_${list.id}",
-    ExistingPeriodicWorkPolicy.UPDATE,
-    workRequest
-)
-```
+Use a **PeriodicWorkRequestBuilder** for each list. Frequencies are stored in seconds.
 
 ### ReminderWorker
 - Fetch the list by `listId`
@@ -103,26 +81,16 @@ WorkManager.getInstance(context).enqueueUniquePeriodicWork(
 
 ## 4. Notification Builder
 
-```kotlin
-fun showNotification(context: Context, listName: String, snippet: String) {
-    val channelId = "snippet_channel"
-    val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+Create a dedicated notification channel for reminders, with low or default importance to avoid noisy alerts.
+Each notification should:
+- Use a stable `notificationId` per list (e.g., `listId.toInt()`) so new reminders replace the previous one.
+- Set the title to the list name and the content text to the current snippet.
+- Use a `PendingIntent` that opens the app to the list detail screen.
+- Respect Android 13+ runtime notification permission handling.
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val channel = NotificationChannel(channelId, "Snippets", NotificationManager.IMPORTANCE_DEFAULT)
-        manager.createNotificationChannel(channel)
-    }
-
-    val notification = NotificationCompat.Builder(context, channelId)
-        .setSmallIcon(R.drawable.ic_reminder)
-        .setContentTitle(listName)
-        .setContentText(snippet)
-        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-        .build()
-
-    manager.notify(Random.nextInt(), notification)
-}
-```
+Optional:
+- Add a small icon indicating reminders.
+- Set `setAutoCancel(true)` so tapping clears it.
 
 ---
 
@@ -166,37 +134,11 @@ Example JSON:
 
 ---
 
-## 8. Future Extensions (optional)
-- Allow manual trigger “Show next snippet now”
-- Add widget with current snippet
-- Add backup/export to file
-- Dark mode and local font settings
-
----
-
-## Development Setup
-
-### Prerequisites
-- Android Studio Iguana or newer
-- Kotlin plugin enabled
-- SDK 26+
-- Gradle plugin 8+
-
-### Run
-1. Clone repository or create new Android project.
-2. Add dependencies in `build.gradle`:
-   ```gradle
-   implementation "androidx.work:work-runtime-ktx:2.9.0"
-   implementation "androidx.room:room-ktx:2.6.1"
-   implementation "androidx.room:room-runtime:2.6.1"
-   kapt "androidx.room:room-compiler:2.6.1"
-   implementation "androidx.core:core-ktx:1.13.1"
-   implementation "androidx.compose.ui:ui:1.7.0"
-   implementation "androidx.compose.material3:material3:1.3.0"
-   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.4"
-   ```
-3. Build → Run on device/emulator.
-4. Sideload resulting `.apk`.
+## 8. Future Enhancements (optional)
+- Add “Next snippet” action/button in notifications
+- Add a homescreen widget with the current snippet
+- Add JSON export/import for backups
+- Add dark mode and custom font settings
 
 ---
 

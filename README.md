@@ -1,7 +1,7 @@
 # Offline Snippet Reminder
 
 A minimal, **offline Android app** that periodically reminds you of short text snippets (quotes, affirmations, ideas, etc.) via **system notifications**.  
-Each snippet list has its own frequency (every 30 min, hour, day, or week), and snippets rotate cyclically without needing any network or user interaction.
+Each snippet list sets its own frequency using a numeric value plus a time unit (minutes/hours/days), and snippets rotate cyclically without needing any network or user interaction.
 The app acts as a **personal recall tool** — snippets you’ve saved reappear as lightweight reminders throughout your day.
 
 ---
@@ -39,13 +39,38 @@ offline-snippet-reminder/
 ├── app/                     # Android app source (created by Codex/Android Studio)
 ├── docs/
 │   └── SPEC.md              # Detailed design and architecture spec
-├── .codex-prompt.txt        # Prompt for generating the app with VS Code Codex
 ├── setup-android-dev.sh     # Environment bootstrap script for Linux/WSL
 ├── README.md                # This file
-├── build.gradle
-├── settings.gradle
+├── build.gradle.kts
+├── settings.gradle.kts
 └── .gitignore
 ```
+
+---
+
+## Development Setup
+
+### Prerequisites
+- Android Studio Iguana or newer
+- Kotlin plugin enabled
+- SDK 26+
+- Gradle plugin 8+
+
+### Run
+1. Clone repository or create new Android project.
+2. Add dependencies in `build.gradle`:
+   ```gradle
+   implementation "androidx.work:work-runtime-ktx:2.9.0"
+   implementation "androidx.room:room-ktx:2.6.1"
+   implementation "androidx.room:room-runtime:2.6.1"
+   kapt "androidx.room:room-compiler:2.6.1"
+   implementation "androidx.core:core-ktx:1.13.1"
+   implementation "androidx.compose.ui:ui:1.7.0"
+   implementation "androidx.compose.material3:material3:1.3.0"
+   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.8.4"
+   ```
+3. Build → Run on device/emulator.
+4. Sideload resulting `.apk`.
 
 ---
 
@@ -84,8 +109,6 @@ You can work from VS Code, but you still need the Android SDK and a JDK (the scr
 - Gradle Tasks
 - XML / Android resource helpers
 - Codex or Copilot for AI-assisted code generation
-
-Use `.codex-prompt.txt` (root) for initial skeleton generation and `.codex-prompt-continue.txt` to continue incomplete work without overwriting finished files.
 
 #### One-command environment setup (Linux / WSL)
 
@@ -183,16 +206,7 @@ Android Studio will now automatically:
 These warnings are present in the build but are not currently harmful to the functionality of the app.
 
 - `Warning:(52, 5) 'composeOptions(org.gradle.api.Action<com.android.build.api.dsl.ComposeOptions>)' is marked unstable with @Incubating`
-- `Warning:(82, 5) This library supports using KSP instead of kapt, which greatly improves performance. Learn more: https://developer.android.com/studio/build/migrate-to-ksp`
 - `Warning:(85, 20) The native library 'arm64-v8a/libsqlcipher.so' (from 'net.zetetic:android-database-sqlcipher:4.5.4') is not 16 KB aligned`
-
----
-
-## Future Enhancements
-- Manual “Next snippet” button in notifications  
-- Homescreen widget  
-- JSON export/import for backups  
-- Dark mode and custom fonts  
 
 ---
 
