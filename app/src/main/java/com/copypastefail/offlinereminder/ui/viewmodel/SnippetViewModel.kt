@@ -61,9 +61,9 @@ class SnippetViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
-    fun onCreateListRequest() {
+    fun onCreateListRequest(name: String) {
         viewModelScope.launch {
-            val newListId = repository.createNewList()
+            val newListId = repository.createNewList(name)
             repository.getListById(newListId)?.let { list ->
                 if (list.isActive) {
                     scheduler.scheduleList(list)

@@ -48,6 +48,7 @@ import com.copypastefail.offlinereminder.ui.viewmodel.SnippetDetailUiModel
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Suppress("AssignedValueIsNeverRead")
 @Composable
 fun DetailScreen(
     list: SnippetDetailUiModel?,
@@ -76,13 +77,12 @@ fun DetailScreen(
     var snippetIdForSheet by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(pendingSnippetId, list?.snippets) {
-        val pendingId = pendingSnippetId
-        val hasSnippet = pendingId != null && list?.snippets?.any { it.id == pendingId } == true
+        val hasSnippet = pendingSnippetId != null && list?.snippets?.any { it.id == pendingSnippetId } == true
         if (hasSnippet) {
-            snippetIdForSheet = pendingId
+            snippetIdForSheet = pendingSnippetId
             isSnippetSheetVisible = true
             onConsumePendingSnippet()
-        } else if (pendingId != null && list != null) {
+        } else if (pendingSnippetId != null && list != null) {
             onConsumePendingSnippet()
         }
     }
@@ -148,9 +148,9 @@ fun DetailScreen(
                 }
             }
         }
-    ) {
+    ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(innerPadding)
         ) {
             Text(
                 text = list?.name ?: "",
@@ -169,12 +169,12 @@ fun DetailScreen(
                 Switch(checked = list?.isActive ?: false, onCheckedChange = onToggleReminders)
             }
 
-            list?.let { it ->
+            list?.let { currentList ->
                 Text(
                     text = stringResource(
                         R.string.notification_frequency_label,
-                        it.frequency,
-                        it.timeUnit.name.lowercase()
+                        currentList.frequency,
+                        currentList.timeUnit.name.lowercase()
                     ),
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
@@ -187,8 +187,12 @@ fun DetailScreen(
                 Text("No snippets in this list.")
             } else {
                 LazyColumn {
-                    items(list.snippets, key = { it.id }) { snippet ->
+                    items(list.snippets, key = { snippetItem -> snippetItem.id }) { snippet ->
                         Card(
+                            onClick = {
+                                snippetIdForSheet = snippet.id
+                                isSnippetSheetVisible = true
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp, horizontal = 8.dp)
@@ -252,24 +256,24 @@ fun DetailScreen(
     }
 
     if (isShowingRenameDialog) {
-        list?.let {
+        list?.let { currentList ->
             RenameListDialog(
                 onDismiss = { isShowingRenameDialog = false },
-                onRename = { it ->
-                    onListNameChange(it)
-                    isShowingRenameDialog = false
-                },
-                initialName = it.name
+                onRename = { newName -> onListNameChange(newName) },
+                initialName = currentList.name
             )
         }
     }
 
-    val snippetForSheet = list?.snippets?.firstOrNull { it.id == snippetIdForSheet }
+    val snippetForSheet = list?.snippets?.firstOrNull { snippet -> snippet.id == snippetIdForSheet }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     if (isSnippetSheetVisible && snippetForSheet != null) {
         ModalBottomSheet(
-            onDismissRequest = { isSnippetSheetVisible = false },
+            onDismissRequest = {
+                isSnippetSheetVisible = false
+                snippetIdForSheet = null
+            },
             sheetState = sheetState
         ) {
             Column(
@@ -279,7 +283,7 @@ fun DetailScreen(
                     .padding(horizontal = 20.dp, vertical = 12.dp)
             ) {
                 Text(
-                    text = list?.name.orEmpty(),
+                    text = list.name,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(12.dp))

@@ -27,10 +27,10 @@ class SnippetRepository(private val dao: ReminderDao) {
         dao.updateActiveState(listId, active)
     }
 
-    suspend fun createNewList(): Int {
+    suspend fun createNewList(name: String): Int {
         val listId = dao.insertList(
             SnippetListEntity(
-                name = "Unnamed List",
+                name = name,
                 frequencySeconds = TimeUnit.HOURS.toSeconds(1),
                 currentIndex = 0,
                 isActive = true

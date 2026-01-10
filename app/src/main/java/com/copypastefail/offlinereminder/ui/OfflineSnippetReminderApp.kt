@@ -12,17 +12,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.copypastefail.offlinereminder.ui.screens.CreateListDialog
 import com.copypastefail.offlinereminder.ui.screens.DeleteConfirmationDialog
 import com.copypastefail.offlinereminder.ui.screens.DetailScreen
 import com.copypastefail.offlinereminder.ui.screens.SnippetListsScreen
 import com.copypastefail.offlinereminder.ui.theme.OfflineSnippetReminderTheme
 import com.copypastefail.offlinereminder.ui.viewmodel.SnippetViewModel
 
+@Suppress("AssignedValueIsNeverRead")
 @Composable
 fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
     val navController = rememberNavController()
     val snippetLists by viewModel.snippetLists.collectAsState()
     var listIdToDelete by remember { mutableStateOf<Int?>(null) }
+    var isShowingCreateListDialog by remember { mutableStateOf(false) }
     val pendingDetailListId by viewModel.pendingDetailListId.collectAsState()
     val pendingSnippetRequest by viewModel.pendingSnippetRequest.collectAsState()
     val context = LocalContext.current
@@ -47,7 +50,7 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
                 SnippetListsScreen(
                     lists = snippetLists,
                     onListSelected = { listId -> navController.navigate(NavRoutes.detailRoute(listId)) },
-                    onCreateNewList = { viewModel.onCreateListRequest() })
+                    onCreateNewList = { isShowingCreateListDialog = true })
             }
             composable(NavRoutes.DETAIL) { backStackEntry ->
                 val listId = backStackEntry.arguments?.getString(NavRoutes.DetailArgs.LISTID)?.toInt()
@@ -83,8 +86,17 @@ fun OfflineSnippetReminderApp(viewModel: SnippetViewModel) {
                     viewModel.deleteList(it)
                     navController.popBackStack()
                 }
-                listIdToDelete = null
             }, onDismiss = { listIdToDelete = null })
+        }
+
+        if (isShowingCreateListDialog) {
+            CreateListDialog(
+                onDismiss = { isShowingCreateListDialog = false },
+                onCreate = { name ->
+                    viewModel.onCreateListRequest(name)
+                    isShowingCreateListDialog = false
+                }
+            )
         }
     }
 }

@@ -80,17 +80,18 @@ fun AddMultipleSnippetsDialog(
     onAddMultipleSnippets: (List<String>) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var text by remember { mutableStateOf("") }
-    val remainingCharacters = (MULTI_SNIPPET_MAX_LENGTH - text.length).coerceAtLeast(0)
+    val snippetsText = remember { mutableStateOf("") }
+    val remainingCharacters =
+        (MULTI_SNIPPET_MAX_LENGTH - snippetsText.value.length).coerceAtLeast(0)
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Add Multiple Snippets") },
         text = {
             TextField(
-                value = text,
+                value = snippetsText.value,
                 onValueChange = {
-                    text = it.take(MULTI_SNIPPET_MAX_LENGTH)
+                    snippetsText.value = it.take(MULTI_SNIPPET_MAX_LENGTH)
                 },
                 placeholder = { Text("Enter snippets, separated by an empty line.") },
                 supportingText = {
@@ -105,7 +106,7 @@ fun AddMultipleSnippetsDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val snippets = text
+                    val snippets = snippetsText.value
                         .split(Regex("\n\n+"))
                         .map { it.trim().take(SNIPPET_MAX_LENGTH) }
                         .filter { it.isNotBlank() }
@@ -170,14 +171,14 @@ fun ChangeFrequencyDialog(
                         onExpandedChange = { expanded = !expanded }
                     ) {
                         TextField(
+                            modifier = Modifier.menuAnchor(),
                             value = selectedTimeUnit.name,
                             onValueChange = {},
                             readOnly = true,
                             label = { Text("Time Unit") },
                             trailingIcon = {
                                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                            },
-                            modifier = Modifier.menuAnchor()
+                            }
                         )
                         ExposedDropdownMenu(
                             expanded = expanded,
@@ -207,11 +208,7 @@ fun ChangeFrequencyDialog(
                         if (frequencyMillis >= TimeUnit.MINUTES.toMillis(15)) {
                             onFrequencyChange(newFrequency, selectedTimeUnit)
                             onDismiss()
-                        } else {
-                            isError = true
                         }
-                    } else {
-                        isError = true
                     }
                 }
             ) {
@@ -232,17 +229,19 @@ fun EditSnippetDialog(
     onDismiss: () -> Unit,
     initialText: String
 ) {
-    var text by remember { mutableStateOf(initialText.take(SNIPPET_MAX_LENGTH)) }
-    val remainingCharacters = (SNIPPET_MAX_LENGTH - text.length).coerceAtLeast(0)
+    val snippetText =
+        remember { mutableStateOf(initialText.take(SNIPPET_MAX_LENGTH)) }
+    val remainingCharacters =
+        (SNIPPET_MAX_LENGTH - snippetText.value.length).coerceAtLeast(0)
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Edit Snippet") },
         text = {
             TextField(
-                value = text,
+                value = snippetText.value,
                 onValueChange = {
-                    text = it.take(SNIPPET_MAX_LENGTH)
+                    snippetText.value = it.take(SNIPPET_MAX_LENGTH)
                 },
                 label = { Text("Snippet Text") },
                 supportingText = { Text("$remainingCharacters characters remaining") },
@@ -252,7 +251,7 @@ fun EditSnippetDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    onEditSnippet(initialText, text)
+                    onEditSnippet(initialText, snippetText.value)
                     onDismiss()
                 }
             ) {
@@ -294,6 +293,7 @@ fun DeleteConfirmationDialog(
     )
 }
 
+@Suppress("AssignedValueIsNeverRead")
 @Composable
 fun RenameListDialog(
     onDismiss: () -> Unit,
@@ -309,7 +309,7 @@ fun RenameListDialog(
         text = {
             TextField(
                 value = newName,
-                onValueChange = { newName = it },
+                onValueChange = { newValue -> newName = newValue },
                 label = { Text("List Name") },
                 singleLine = true
             )
@@ -322,6 +322,42 @@ fun RenameListDialog(
                 enabled = isNameChanged
             ) {
                 Text("Update")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Suppress("AssignedValueIsNeverRead")
+@Composable
+fun CreateListDialog(
+    onDismiss: () -> Unit,
+    onCreate: (String) -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    val trimmedName = name.trim()
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Create List") },
+        text = {
+            TextField(
+                value = name,
+                onValueChange = { newValue -> name = newValue },
+                label = { Text("List Name") },
+                singleLine = true
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = { onCreate(trimmedName) },
+                enabled = trimmedName.isNotEmpty()
+            ) {
+                Text("Create")
             }
         },
         dismissButton = {
